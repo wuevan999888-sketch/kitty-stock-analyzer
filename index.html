@@ -4,49 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taiwan Stock Market Analysis</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; }
-        h1 { color: #333; }
-        #results { margin-top: 20px; }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <h1>Taiwan Stock Market Analysis System</h1>
-    <div>
-        <label for="stockSymbol">Enter Stock Symbol:</label>
-        <input type="text" id="stockSymbol" placeholder="e.g., 2330.TW">
-        <button id="analyzeBtn">Analyze</button>
-    </div>
-    <div id="results"></div>
+    <h1>Taiwan Stock Market Analysis</h1>
+    <div id="stockData"></div>
     <script>
-        const API_KEY_YAHOO = 'YOUR_YAHOO_FINANCE_API_KEY';
-        const API_KEY_FINMIND = 'YOUR_FINMIND_API_KEY';
-
-        document.getElementById('analyzeBtn').onclick = function() {
-            const symbol = document.getElementById('stockSymbol').value;
-            analyzeStock(symbol);
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMarket');
+                const stockData = response.data.data;
+                const stockDataDiv = document.getElementById('stockData');
+                stockData.forEach(stock => {
+                    stockDataDiv.innerHTML += `<p>${stock.stock_id}: ${stock.price}</p>`;
+                });
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+            }
         };
 
-        async function analyzeStock(symbol) {
-            try {
-                const response = await fetch(`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbol}&apiKey=${API_KEY_YAHOO}`);
-                const data = await response.json();
-                displayResults(data);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
-
-        function displayResults(data) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = ''; // Clear previous results
-            if (data.quoteResponse.result.length) {
-                const stock = data.quoteResponse.result[0];
-                resultsDiv.innerHTML = `<h2>${stock.symbol} Analysis</h2>\n                <p>Price: ${stock.regularMarketPrice}</p>\n                <p>Market Cap: ${stock.marketCap}</p>\n                <p>52 Week High: ${stock['52wkHigh']}</p>\n                <p>52 Week Low: ${stock['52wkLow']}</p>`;
-            } else {
-                resultsDiv.innerHTML = '<p>No data found.</p>';
-            }
-        }
+        fetchData();
     </script>
 </body>
 </html>
