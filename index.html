@@ -2,28 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Taiwan Stock Market Analysis</title>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Stock Analyzer</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <h1>Taiwan Stock Market Analysis</h1>
-    <div id="stockData"></div>
-    <script>
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockMarket');
-                const stockData = response.data.data;
-                const stockDataDiv = document.getElementById('stockData');
-                stockData.forEach(stock => {
-                    stockDataDiv.innerHTML += `<p>${stock.stock_id}: ${stock.price}</p>`;
-                });
-            } catch (error) {
-                console.error('Error fetching data: ', error);
-            }
-        };
+    <h1>Stock Analyzer</h1>
+    <input type="text" id="searchBox" placeholder="Search stock...">
+    <table>
+        <thead>
+            <tr>
+                <th>Stock Code</th>
+                <th>Company Name</th>
+                <th>Price (TWD)</th>
+                <th>Change</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>2330</td>
+                <td>Taiwan Semiconductor Manufacturing</td>
+                <td>600.00</td>
+                <td>+2.50</td>
+            </tr>
+            <tr>
+                <td>2317</td>
+                <td>Hon Hai Precision Industry</td>
+                <td>150.00</td>
+                <td>-0.30</td>
+            </tr>
+            <tr>
+                <td>2412</td>
+                <td>Advanced Micro-Fabrication Equipment</td>
+                <td>300.00</td>
+                <td>+1.00</td>
+            </tr>
+            <tr>
+                <td>2454</td>
+                <td>MediaTek</td>
+                <td>700.00</td>
+                <td>+5.00</td>
+            </tr>
+        </tbody>
+    </table>
 
-        fetchData();
+    <script>
+        const searchBox = document.getElementById('searchBox');
+        searchBox.addEventListener('input', function() {
+            const filter = searchBox.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+                for (let i = 0; i < cells.length; i++) {
+                    if (cells[i].textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                        break;
+                    }
+                }
+                row.style.display = match ? '' : 'none';
+            });
+        });
     </script>
 </body>
 </html>
